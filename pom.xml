@@ -41,7 +41,8 @@
     <!-- Build configuration. Hier sollte noch ein Plugin für
      das Packaging hinzugefügt werden. Das Standard-Plugin von Maven
      fügt leider kein Abhängigkeiten hinzu. Bitte gerne nach Alternativen suchen.
-     ChatGPT liefert hier gute Beispiele-->
+     ChatGPT liefert hier gute Beispiele (denkbares Prompt: How can I include a jar-File
+     into a jar file when using maven? :-)-->
 
 
 </project>
