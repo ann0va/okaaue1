@@ -8,10 +8,10 @@ Das System besteht aus zwei Hauptdiagrammen:
 
 ### 1. Strukturdiagramm
 
-![ProductManagement Component Diagram](img/image1.png)
+![ProductManagement Component Diagram](img/Picture1.png)
 
 ### 2. Port-Konfigurationsdiagramm
-![Port-Konfigurationsdiagramm](img/image2.png)
+![Port-Konfigurationsdiagramm](img/Picture2.png)
 
 
 ## Was sind Ports?
