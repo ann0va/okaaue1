@@ -7,13 +7,12 @@ Dieses Repository demonstriert das Konzept und die Implementierung von Ports in 
 Das System besteht aus zwei Hauptdiagrammen:
 
 ### 1. Strukturdiagramm
-```
-![ProductManagement Component Diagram](path/to/image1.png)
+
+![ProductManagement Component Diagram](img/image1.png)
 
 ### 2. Port-Konfigurationsdiagramm
-```
-![Port-Konfigurationsdiagramm](path/to/image2.png)
-```
+![Port-Konfigurationsdiagramm](img/image2.png)
+
 
 ## Was sind Ports?
 Ports in Komponentendiagrammen dienen als klar definierte Interaktionsschnittstellen zwischen verschiedenen Systemteilen. In unserem ProductManagement-System haben wir drei Hauptports:
