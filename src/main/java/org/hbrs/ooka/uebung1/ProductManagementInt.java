@@ -2,6 +2,11 @@ package org.hbrs.ooka.uebung1;
 
 import org.hbrs.ooka.uebung1.entities.Product;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Spezifikation des Interfaces ProductManagementInt:
@@ -28,4 +33,11 @@ public interface ProductManagementInt {
 
     // Schließen einer Session (hier sollte die Verbindung zur Datenbank geschlossen werden)
     public void closeSession();
+
+    // Neue CRUD-Methoden
+    public void createProduct(Product product);
+    public Product getProductById(int id);
+    public List<Product> getAllProducts();
+    public void updateProduct(Product product);
+    public void deleteProduct(int id);
 }

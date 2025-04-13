@@ -67,6 +67,14 @@ public class ProductManagement implements ProductManagementInt {
 ```
 
 ### 2. Required Interface (Caching)
+
+Das Delegate-Pattern (oder Proxy-Pattern) ist ideal, um die Delegation zwischen internem und externem Verhalten zu realisieren:
+
+Ein Port delegiert Aufrufe an die eigentliche Implementierung.
+
+Er kann zusätzliche Funktionalität (Logging, Caching) einfügen.
+
+
 ```java
 public interface Caching {
     void cacheResult(String key, List<Object> value);
@@ -176,3 +184,115 @@ public class ProductController {
 - Maven (für Dependency Injection)
 - JDBC für Datenbankzugriffe
 - JUnit für Tests (empfohlen)
+
+## Lifecycle Management und CRUD-Operationen :: FA1
+
+### 1. Methodenreihenfolge
+Das Interface `ProductManagementInt` definiert eine strikte Reihenfolge für Methodenaufrufe:
+
+1. **Initialisierung**: `openSession()` MUSS zuerst aufgerufen werden
+2. **Operationen**: CRUD-Methoden können beliebig ausgeführt werden
+3. **Beendigung**: `closeSession()` MUSS am Ende aufgerufen werden
+
+### 2. Erweiterte CRUD-Operationen
+Das Interface wurde um folgende Methoden erweitert:
+
+```java
+public interface ProductManagementInt {
+    // Bestehende Methoden
+    List<Product> getProductByName(String name);
+    void openSession();
+    void closeSession();
+
+    // Neue CRUD-Methoden
+    void createProduct(Product product);
+    Product getProductById(int id);
+    List<Product> getAllProducts();
+    void updateProduct(Product product);
+    void deleteProduct(int id);
+}
+```
+
+### 3. Lifecycle-Implementierung :: FA1
+Die Implementierung verwendet ein einfaches Zustandsmodell:
+
+```java
+public class ProductManagement implements ProductManagementInt {
+    private Connection connection;
+    private boolean isSessionOpen = false;
+
+    @Override
+    public void openSession() {
+        if (isSessionOpen) {
+            throw new IllegalStateException("Session is already open!");
+        }
+        try {
+            connection = DatabaseConnection.getConnection();
+            isSessionOpen = true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to open database connection", e);
+        }
+    }
+
+    @Override
+    public void closeSession() {
+        if (!isSessionOpen) {
+            throw new IllegalStateException("No session is currently open!");
+        }
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+            isSessionOpen = false;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to close database connection", e);
+        }
+    }
+}
+```
+
+### 4. Sicherheitsaspekte der Implementierung
+
+1. **Zustandsüberwachung**:
+   - Tracking des Session-Status über `isSessionOpen`
+   - Validierung des Status vor jeder Operation
+   - Verhinderung von mehrfachen Session-Öffnungen
+
+2. **Fehlerbehandlung**:
+   - Aussagekräftige Exception-Messages
+   - Proper Resource Management
+   - SQL-Exception Handling
+
+3. **Best Practices**:
+   - Fail-Fast Prinzip bei ungültigem Zustand
+   - Sauberes Connection-Management
+   - Thread-Safety Considerations
+
+### 5. Beispiel einer CRUD-Operation
+
+```java
+@Override
+public List<Product> getProductByName(String name) {
+    if (!isSessionOpen) {
+        throw new IllegalStateException("Session must be opened before executing queries!");
+    }
+    List<Product> products = new ArrayList<>();
+    try {
+        String sql = "SELECT * FROM products WHERE name LIKE ?";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setString(1, "%" + name + "%");
+        ResultSet rs = pstmt.executeQuery();
+        
+        while (rs.next()) {
+            products.add(new Product(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price")
+            ));
+        }
+    } catch (SQLException e) {
+        throw new RuntimeException("Error executing query", e);
+    }
+    return products;
+}
+```
