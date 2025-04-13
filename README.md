@@ -296,3 +296,166 @@ public List<Product> getProductByName(String name) {
     return products;
 }
 ```
+
+## Implementierung und Konfiguration :: FA2.1
+
+### 1. Maven Konfiguration
+Die `pom.xml` wurde optimiert, um eine vollständige Entwicklungs- und Buildumgebung zu gewährleisten:
+
+```xml
+<dependencies>
+    <!-- H2 Datenbank mit Runtime-Verfügbarkeit -->
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>2.3.232</version>
+        <scope>compile</scope>
+    </dependency>
+    <!-- ... weitere Dependencies ... -->
+</dependencies>
+
+<build>
+    <plugins>
+        <!-- Maven Assembly Plugin für JAR mit Dependencies -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.6.0</version>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+Wichtige Konfigurationsaspekte:
+- H2 Datenbank mit `compile` scope für Runtime-Verfügbarkeit
+- Assembly Plugin für standalone JAR-Erstellung
+- Surefire Plugin für JUnit-Test-Integration
+
+### 2. ProductManagement Implementierung 
+Die Komponente wurde mit vollständigem Lifecycle-Management und CRUD-Operationen implementiert:
+
+```java
+public class ProductManagement implements ProductManagementInt {
+    private Connection connection;
+    private boolean isSessionOpen = false;
+
+    // Lifecycle-Management
+    @Override
+    public void openSession() {
+        if (isSessionOpen) {
+            throw new IllegalStateException("Session is already open!");
+        }
+        // Datenbankverbindung aufbauen...
+    }
+
+    @Override
+    public void closeSession() {
+        if (!isSessionOpen) {
+            throw new IllegalStateException("No session is currently open!");
+        }
+        // Verbindung sauber schließen...
+    }
+
+    // CRUD-Operationen
+    @Override
+    public List<Product> getProductByName(String name) {
+        checkSession();
+        // Implementierung der Suche...
+    }
+
+    // Weitere CRUD-Methoden...
+}
+```
+
+### 3. JUnit Tests
+Die Tests wurden erweitert, um alle Aspekte der Komponente abzudecken:
+
+```java
+public class ConnectionTest {
+    private ProductManagement productManagement;
+
+    @Test
+    public void testCompleteRoundTrip() {
+        // 1. Produkt erstellen
+        Product newProduct = new Product(0, "Test Product", 99.99);
+        productManagement.createProduct(newProduct);
+
+        // 2. Produkt lesen
+        Product retrieved = productManagement.getProductById(newProduct.getId());
+        assertEquals(newProduct.getName(), retrieved.getName());
+
+        // 3. Produkt aktualisieren
+        retrieved.setPrice(149.99);
+        productManagement.updateProduct(retrieved);
+
+        // 4. Produkt löschen
+        productManagement.deleteProduct(newProduct.getId());
+    }
+
+    // Weitere Testmethoden...
+}
+```
+
+### 4. Wichtige Implementierungsdetails
+
+#### Zustandsmanagement
+- Explizite Session-Verwaltung mit `isSessionOpen` Flag
+- Überprüfung des Session-Status vor jeder Operation
+- Automatische Tabellenerstellung bei Session-Öffnung
+
+#### Datenbankoperationen
+- Verwendung von Prepared Statements gegen SQL-Injection
+- Proper Resource Management mit try-with-resources
+- Automatische ID-Generierung für neue Produkte
+
+#### Fehlerbehandlung
+- Spezifische Exception-Typen für verschiedene Fehlerfälle
+- Sauberes Connection-Management
+- Validierung von Eingabeparametern
+
+### 5. Build und Ausführung mit IntelliJ IDEA
+
+#### Maven Operationen in IntelliJ
+1. Öffnen Sie das Maven Tool Window:
+   - Rechts in der IDE auf "Maven" klicken
+   - Alternativ: View -> Tool Windows -> Maven
+
+2. Projekt bauen:
+   - Expandieren Sie Ihr Projekt in Maven Tool Window
+   - Unter "Lifecycle" finden Sie alle Maven Goals
+   - Doppelklick auf "clean" (löscht alte Builds)
+   - Doppelklick auf "package" (erstellt neue JAR)
+
+3. Tests ausführen:
+   - Rechtsklick auf das Projekt im Project Explorer
+   - "Run All Tests" auswählen
+   - Alternativ: Unter Maven -> Lifecycle -> "test" doppelklicken
+
+4. JAR-Datei finden:
+   - Nach dem Build liegt die JAR-Datei im `target`-Ordner
+   - Zwei Versionen werden erstellt:
+     * `OOKAUebungNr1-1.0-SNAPSHOT.jar` (ohne Dependencies)
+     * `OOKAUebungNr1-1.0-SNAPSHOT-jar-with-dependencies.jar` (mit allen Dependencies)
+
+#### IntelliJ Run Configurations
+Sie können auch direkte Run Configurations erstellen:
+
+1. Für Tests:
+   - Öffnen Sie die Klasse `ConnectionTest`
+   - Klicken Sie auf das grüne Play-Symbol neben der Klasse
+   - Oder: Rechtsklick -> Run 'ConnectionTest'
+
+2. Für die Anwendung:
+   - Rechtsklick auf `ProductManagement.java`
+   - "Run ProductManagement.main()"
+
+### 6. Datenbank-Konfiguration
+Die H2-Datenbank wird in folgender Konfiguration verwendet:
+- Embedded Mode für Entwicklung und Tests
+- Automatische Tabellenerstellung
+- Connection-Pooling durch H2's eingebaute Funktionen
