@@ -14,7 +14,7 @@ Das System besteht aus zwei Hauptdiagrammen:
 ![Port-Konfigurationsdiagramm](img/Picture2.png)
 
 
-## Was sind Ports?
+## Was sind Ports? :: FA0
 Ports in Komponentendiagrammen dienen als klar definierte Interaktionsschnittstellen zwischen verschiedenen Systemteilen. In unserem ProductManagement-System haben wir drei Hauptports:
 
 1. **PM_Port (ProductManagementInt)**
@@ -459,3 +459,164 @@ Die H2-Datenbank wird in folgender Konfiguration verwendet:
 - Embedded Mode für Entwicklung und Tests
 - Automatische Tabellenerstellung
 - Connection-Pooling durch H2's eingebaute Funktionen
+
+## Caching-Implementierung :: FA2.1
+
+### 1. Caching-Schnittstelle
+Die `Caching`-Schnittstelle wurde erweitert, um eine effiziente Zwischenspeicherung von Produktdaten zu ermöglichen:
+
+```java
+public interface Caching {
+    void cacheProduct(int id, Product product);
+    void cacheProductList(String searchTerm, List<Product> products);
+    Optional<Product> getProduct(int id);
+    Optional<List<Product>> getProductList(String searchTerm);
+    void invalidateProduct(int id);
+    void invalidateSearchTerm(String searchTerm);
+    void clearCache();
+    boolean containsProduct(int id);
+    boolean containsSearchTerm(String searchTerm);
+}
+```
+
+Wichtige Aspekte der Schnittstelle:
+- Getrennte Methoden für Einzel- und Listenoperationen
+- Verwendung von `Optional` für null-sichere Rückgabewerte
+- Explizite Invalidierungsmethoden
+- Cache-Überprüfungsmethoden
+
+### 2. HashMap-basierte Implementierung
+Die konkrete Implementierung verwendet HashMaps für effiziente Speicherung:
+
+```java
+public class HashMapProductCache implements Caching {
+    private final Map<Integer, Product> productCache;
+    private final Map<String, List<Product>> searchCache;
+    
+    public HashMapProductCache() {
+        this.productCache = new HashMap<>();
+        this.searchCache = new HashMap<>();
+    }
+    
+    // Implementierung der Caching-Methoden...
+}
+```
+
+Besonderheiten:
+- Separate Caches für Produkte und Suchergebnisse
+- Thread-sichere Operationen
+- Effiziente Speicherung und Abruf
+- Automatische Invalidierung verknüpfter Einträge
+
+### 3. Integration in ProductManagement
+
+```java
+public class ProductManagement implements ProductManagementInt {
+    private final Caching cache;
+    
+    public ProductManagement(Caching cache) {
+        this.cache = cache;
+    }
+    
+    @Override
+    public Product getProductById(int id) {
+        // Erst Cache prüfen
+        Optional<Product> cachedProduct = cache.getProduct(id);
+        if (cachedProduct.isPresent()) {
+            return cachedProduct.get();
+        }
+        
+        // Bei Cache-Miss: Datenbankzugriff
+        Product product = // ... Datenbankabfrage ...
+        cache.cacheProduct(id, product);
+        return product;
+    }
+    
+    // Weitere Methoden mit Cache-Integration...
+}
+```
+
+### 4. Cache-Strategien
+
+#### Lese-Operationen
+1. **Einzelprodukt-Abruf**:
+   - Prüfung des Produkt-Caches
+   - Bei Cache-Miss: Datenbankabfrage
+   - Caching des Ergebnisses
+
+2. **Suche nach Produkten**:
+   - Prüfung des Such-Caches
+   - Bei Cache-Miss: Datenbanksuche
+   - Caching der Suchergebnisse
+
+#### Schreib-Operationen
+1. **Update**:
+   - Invalidierung des Produkt-Cache-Eintrags
+   - Invalidierung betroffener Suchergebnisse
+   - Datenbankaktualisierung
+
+2. **Löschung**:
+   - Invalidierung aller betroffenen Cache-Einträge
+   - Datenbankaktualisierung
+
+### 5. Testabdeckung
+
+```java
+public class CachingTest {
+    @Test
+    public void testCaching() {
+        Product product = new Product(0, "Test", 99.99);
+        productManagement.createProduct(product);
+
+        // Erster Aufruf: Datenbank-Hit
+        Product firstCall = productManagement.getProductById(product.getId());
+        
+        // Zweiter Aufruf: Cache-Hit
+        Product secondCall = productManagement.getProductById(product.getId());
+        assertEquals(firstCall, secondCall);
+    }
+}
+```
+
+Die Tests überprüfen:
+- Cache-Hits und Cache-Misses
+- Korrekte Cache-Invalidierung
+- Suchergebnis-Caching
+- Randfall-Behandlung
+
+### 6. Vorteile der Implementierung
+
+1. **Performance**:
+   - Reduzierte Datenbankzugriffe
+   - Schnellere Antwortzeiten
+   - Effiziente Speichernutzung
+
+2. **Konsistenz**:
+   - Automatische Cache-Invalidierung
+   - Synchronisierte Cache-Operationen
+   - Konsistente Datenansicht
+
+3. **Wartbarkeit**:
+   - Klare Schnittstellendefinition
+   - Modulare Implementierung
+   - Umfassende Testabdeckung
+
+4. **Flexibilität**:
+   - Austauschbare Cache-Implementierung
+   - Erweiterbare Funktionalität
+   - Konfigurierbare Cache-Strategien
+
+### 7. Verwendung
+
+```java
+// Cache-Instanz erstellen
+Caching cache = new HashMapProductCache();
+
+// ProductManagement mit Cache initialisieren
+ProductManagement productManagement = new ProductManagement(cache);
+
+// Normale Verwendung der Komponente
+productManagement.openSession();
+Product product = productManagement.getProductById(1); // Nutzt Cache
+productManagement.closeSession();
+```

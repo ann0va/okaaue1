@@ -4,10 +4,16 @@ import org.hbrs.ooka.uebung1.entities.Product;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProductManagement implements ProductManagementInt {
     private Connection connection;
     private boolean isSessionOpen = false;
+    private final Caching cache;
+
+    public ProductManagement(Caching cache) {
+        this.cache = cache;
+    }
 
     @Override
     public void openSession() {
@@ -59,6 +65,14 @@ public class ProductManagement implements ProductManagementInt {
     @Override
     public List<Product> getProductByName(String name) {
         checkSession();
+        
+        // Check cache first
+        Optional<List<Product>> cachedProducts = cache.getProductList(name);
+        if (cachedProducts.isPresent()) {
+            return cachedProducts.get();
+        }
+
+        // If not in cache, query database
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM products WHERE name LIKE ?";
         
@@ -73,10 +87,12 @@ public class ProductManagement implements ProductManagementInt {
                     rs.getDouble("price")
                 ));
             }
+            // Cache the results
+            cache.cacheProductList(name, products);
+            return products;
         } catch (SQLException e) {
             throw new RuntimeException("Error executing query", e);
         }
-        return products;
     }
 
     public void createProduct(Product product) {
@@ -99,20 +115,31 @@ public class ProductManagement implements ProductManagementInt {
         }
     }
 
+    @Override
     public Product getProductById(int id) {
         checkSession();
-        String sql = "SELECT * FROM products WHERE id = ?";
         
+        // First check cache
+        Optional<Product> cachedProduct = cache.getProduct(id);
+        if (cachedProduct.isPresent()) {
+            return cachedProduct.get();
+        }
+
+        // If not in cache, get from database
+        String sql = "SELECT * FROM products WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                return new Product(
+                Product product = new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getDouble("price")
                 );
+                // Cache the result
+                cache.cacheProduct(id, product);
+                return product;
             }
             return null;
         } catch (SQLException e) {
@@ -141,6 +168,7 @@ public class ProductManagement implements ProductManagementInt {
         return products;
     }
 
+    @Override
     public void updateProduct(Product product) {
         checkSession();
         String sql = "UPDATE products SET name = ?, price = ? WHERE id = ?";
@@ -154,11 +182,16 @@ public class ProductManagement implements ProductManagementInt {
             if (rowsAffected == 0) {
                 throw new RuntimeException("Product with ID " + product.getId() + " not found");
             }
+            
+            // Invalidate cache entries
+            cache.invalidateProduct(product.getId());
+            cache.clearCache(); // Clear search results as they might be affected
         } catch (SQLException e) {
             throw new RuntimeException("Error updating product", e);
         }
     }
 
+    @Override
     public void deleteProduct(int id) {
         checkSession();
         String sql = "DELETE FROM products WHERE id = ?";
@@ -170,6 +203,10 @@ public class ProductManagement implements ProductManagementInt {
             if (rowsAffected == 0) {
                 throw new RuntimeException("Product with ID " + id + " not found");
             }
+            
+            // Invalidate cache entries
+            cache.invalidateProduct(id);
+            cache.clearCache(); // Clear search results as they might be affected
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting product", e);
         }
