@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8eec5bcc-940c-4ed5-aa61-73870d3cf9a0" name="Changes" comment="init &quot;pom.xml&quot; ist konfiguriert, die JUnit-Tests sind erweitert, die ProductManagement Component ist konfiguriert, das Problem mit der DB ist gelöst.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagement.java" afterDir="false" />
-    </list>
+    <list default="true" id="8eec5bcc-940c-4ed5-aa61-73870d3cf9a0" name="Changes" comment="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,6 +21,7 @@
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
+        <option value="ann0va &lt;139812575+ann0va@users.noreply.github.com&gt;" />
         <option value="ann0va &lt;anna.zhosan7@gmail.com&gt;" />
       </list>
     </option>
@@ -165,7 +162,7 @@
       <workItem from="1712646063028" duration="10889000" />
       <workItem from="1743098677691" duration="14009000" />
       <workItem from="1743351909139" duration="6532000" />
-      <workItem from="1744564151425" duration="7340000" />
+      <workItem from="1744564151425" duration="8274000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -191,7 +188,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744570442618</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu">
+      <option name="closed" value="true" />
+      <created>1744617192947</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1744617192947</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,7 +217,8 @@
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="init Interface erweitern, Lifecycle Methoden implementieren" />
     <MESSAGE value="init &quot;pom.xml&quot; ist konfiguriert, die JUnit-Tests sind erweitert, die ProductManagement Component ist konfiguriert, das Problem mit der DB ist gelöst." />
-    <option name="LAST_COMMIT_MESSAGE" value="init &quot;pom.xml&quot; ist konfiguriert, die JUnit-Tests sind erweitert, die ProductManagement Component ist konfiguriert, das Problem mit der DB ist gelöst." />
+    <MESSAGE value="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
+    <option name="LAST_COMMIT_MESSAGE" value="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/OOKAUe1$.ic" NAME=" Coverage Results" MODIFIED="1743099968890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />

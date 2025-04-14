@@ -11,6 +11,7 @@ Das System besteht aus zwei Hauptdiagrammen:
 ![ProductManagement Component Diagram](img/Picture1.png)
 
 ### 2. Port-Konfigurationsdiagramm
+
 ![Port-Konfigurationsdiagramm](img/Picture2.png)
 
 
@@ -620,3 +621,153 @@ productManagement.openSession();
 Product product = productManagement.getProductById(1); // Nutzt Cache
 productManagement.closeSession();
 ```
+
+## Null-Sichere Cache-Implementierung :: FA3
+
+### 1. Null Object Pattern
+Um NullPointerExceptions zu vermeiden und eine robuste Cache-Implementierung zu gewährleisten, wurde das Null Object Pattern implementiert:
+
+```java
+public class NullCache implements Caching {
+    @Override
+    public Optional<Product> getProduct(int id) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<List<Product>> getProductList(String searchTerm) {
+        return Optional.of(Collections.emptyList());
+    }
+    
+    // Weitere "silent fail" Implementierungen...
+}
+```
+
+### 2. Cache Factory
+Die CacheFactory verwaltet die Cache-Instanzen und stellt sicher, dass immer ein funktionierender Cache verfügbar ist:
+
+```java
+public class CacheFactory {
+    private static final NullCache NULL_CACHE = new NullCache();
+    private static Caching defaultCache = NULL_CACHE;
+    
+    public static Caching getCache(Caching specificCache) {
+        return specificCache != null ? specificCache : defaultCache;
+    }
+    
+    public static void setDefaultCache(Caching cache) {
+        defaultCache = cache != null ? cache : NULL_CACHE;
+    }
+}
+```
+
+Funktionen:
+- Zentrale Cache-Verwaltung
+- Globale Standardkonfiguration
+- Sichere Fallback-Mechanismen
+
+### 3. Verbesserte Controller-Implementierung
+
+```java
+public class ProductController {
+    private final ProductManagementInt productService;
+    private final Caching cache;
+    
+    public ProductController(ProductManagementInt productService, Caching specificCache) {
+        this.productService = productService;
+        this.cache = CacheFactory.getCache(specificCache);
+    }
+    
+    public Product getProduct(int id) {
+        Optional<Product> cachedProduct = cache.getProduct(id);
+        if (cachedProduct.isPresent()) {
+            return cachedProduct.get();
+        }
+        
+        Product product = productService.getProductById(id);
+        if (product != null) {
+            cache.cacheProduct(id, product);
+        }
+        return product;
+    }
+}
+```
+
+### 4. Konfigurationsmöglichkeiten
+
+#### Globale Cache-Konfiguration
+```java
+// Anwendungsweiten Standard-Cache setzen
+CacheFactory.setDefaultCache(new HashMapProductCache());
+
+// Controller verwendet automatisch den Standard-Cache
+ProductController controller = new ProductController(productService);
+```
+
+#### Spezifische Cache-Konfiguration
+```java
+// Spezifischen Cache für einen Controller setzen
+Caching specificCache = new HashMapProductCache();
+ProductController controller = new ProductController(productService, specificCache);
+```
+
+#### Zurücksetzen auf NullCache
+```java
+// Zurück zum sicheren Null-Cache
+CacheFactory.resetToNullCache();
+```
+### 6. Testbarkeit
+
+```java
+@Test
+public void testCacheBehavior() {
+    // Test mit NullCache
+    ProductController controllerWithoutCache = 
+        new ProductController(productService);
+    
+    // Test mit spezifischem Cache
+    ProductController controllerWithCache = 
+        new ProductController(productService, new HashMapProductCache());
+    
+    // Beide Controller funktionieren ohne Fehler
+    Product product = controllerWithoutCache.getProduct(1);
+    assertNotNull(product);  // Kein NPE
+}
+```
+
+Testaspekte:
+- Verhalten mit und ohne Cache
+- Korrekte Fallback-Mechanismen
+- Cache-Invalidierung
+- Fehlerszenarien
+
+### 7. Best Practices
+
+1. **Cache-Konfiguration**:
+   ```java
+   // Applikationsstart: Globalen Cache konfigurieren
+   public void initializeApplication() {
+       CacheFactory.setDefaultCache(new HashMapProductCache());
+   }
+   ```
+
+2. **Controller-Erstellung**:
+   ```java
+   // Standard-Verwendung (nutzt globalen Cache)
+   ProductController controller = new ProductController(productService);
+   
+   // Spezifische Verwendung
+   ProductController controller = new ProductController(
+       productService, 
+       new HashMapProductCache()
+   );
+   ```
+
+3. **Cache-Verwaltung**:
+   ```java
+   // In Testumgebungen
+   @BeforeEach
+   public void setup() {
+       CacheFactory.resetToNullCache();
+   }
+   ```
