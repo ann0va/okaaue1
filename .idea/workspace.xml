@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8eec5bcc-940c-4ed5-aa61-73870d3cf9a0" name="Changes" comment="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
+    <list default="true" id="8eec5bcc-940c-4ed5-aa61-73870d3cf9a0" name="Changes" comment="implementiert Null Object Pattern in Kombination mit Factory Pattern, aktualisiert ProductController">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagementInt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/ProductManagementInt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/cache/CacheFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/cache/HashMapProductCache.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/hbrs/ooka/uebung1/cache/NullCache.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/CachingTest.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,7 +66,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "JAR Application.OOKAUebungNr1-1.0-SNAPSHOT.jar.executor": "Coverage",
+    "JAR Application.OOKAUe1-1.0-SNAPSHOT.jar.executor": "Run",
+    "JAR Application.OOKAUebungNr1-1.0-SNAPSHOT.jar.executor": "Run",
     "JUnit.ConnectionTest.executor": "Run",
     "JUnit.ConnectionTest.roundTrip.executor": "Run",
     "Maven.OOKAUe1 [clean].executor": "Run",
@@ -78,6 +90,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -135,11 +148,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.OOKAUebungNr1-1.0-SNAPSHOT.jar" />
+        <item itemvalue="JAR Application.OOKAUe1-1.0-SNAPSHOT.jar" />
         <item itemvalue="JUnit.ConnectionTest" />
         <item itemvalue="JUnit.ConnectionTest.testConnectionWithOutOpen" />
         <item itemvalue="JUnit.ConnectionTest.roundTrip" />
-        <item itemvalue="JAR Application.OOKAUebungNr1-1.0-SNAPSHOT.jar" />
-        <item itemvalue="JAR Application.OOKAUe1-1.0-SNAPSHOT.jar" />
       </list>
     </recent_temporary>
   </component>
@@ -162,7 +175,7 @@
       <workItem from="1712646063028" duration="10889000" />
       <workItem from="1743098677691" duration="14009000" />
       <workItem from="1743351909139" duration="6532000" />
-      <workItem from="1744564151425" duration="8274000" />
+      <workItem from="1744564151425" duration="17959000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -196,7 +209,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744617192947</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="implementiert Null Object Pattern in Kombination mit Factory Pattern, aktualisiert ProductController">
+      <option name="closed" value="true" />
+      <created>1744622581088</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744622581088</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -218,7 +239,8 @@
     <MESSAGE value="init Interface erweitern, Lifecycle Methoden implementieren" />
     <MESSAGE value="init &quot;pom.xml&quot; ist konfiguriert, die JUnit-Tests sind erweitert, die ProductManagement Component ist konfiguriert, das Problem mit der DB ist gelöst." />
     <MESSAGE value="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
-    <option name="LAST_COMMIT_MESSAGE" value="verbessert Caching-Schnittstelle, implementiert konkret HashMap-basierten Cache, aktualisiert ProductManagement Klasse, fügt Test für Caching-Funktionalität hinzu" />
+    <MESSAGE value="implementiert Null Object Pattern in Kombination mit Factory Pattern, aktualisiert ProductController" />
+    <option name="LAST_COMMIT_MESSAGE" value="implementiert Null Object Pattern in Kombination mit Factory Pattern, aktualisiert ProductController" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/OOKAUe1$.ic" NAME=" Coverage Results" MODIFIED="1743099968890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
